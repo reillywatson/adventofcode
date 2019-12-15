@@ -3,34 +3,34 @@ package main
 import "fmt"
 
 type moon struct {
-	x       int
-	y       int
-	z       int
-	dx      int
-	dy      int
-	dz      int
-	xperiod int
-	yperiod int
-	zperiod int
+	x      int
+	y      int
+	z      int
+	dx     int
+	dy     int
+	dz     int
+	period int
 }
 
 func main() {
 	moons := []*moon{
-		/*
-			{x: -1, y: 0, z: 2},
-			{x: 2, y: -10, z: -7},
-			{x: 4, y: -8, z: 8},
-			{x: 3, y: 5, z: -1},*/
+		// should take 2772
+		/*{x: -1, y: 0, z: 2},
+		{x: 2, y: -10, z: -7},
+		{x: 4, y: -8, z: 8},
+		{x: 3, y: 5, z: -1},*/
 
+		// should take 4686774924
 		{x: -8, y: -10, z: 0},
 		{x: 5, y: 5, z: 10},
 		{x: 2, y: -7, z: 3},
 		{x: 9, y: -8, z: -3},
-		/*
-			{x: 17, y: 5, z: 1},
-			{x: -2, y: -8, z: 8},
-			{x: 7, y: -6, z: 14},
-			{x: 1, y: -10, z: 4},*/
+
+		/* real
+		{x: 17, y: 5, z: 1},
+		{x: -2, y: -8, z: 8},
+		{x: 7, y: -6, z: 14},
+		{x: 1, y: -10, z: 4},*/
 	}
 	init := []moon{
 		*moons[0],
@@ -38,23 +38,24 @@ func main() {
 		*moons[2],
 		*moons[3],
 	}
-	numWithPeriods := 0
-	for iters := 0; numWithPeriods < len(moons); iters++ {
-		numWithPeriods = 0
+	periodsFound := map[int]bool{}
+iterLoop:
+	for iters := 0; len(periodsFound) < len(moons); iters++ {
 		for i, a := range moons {
-			if a.xperiod == 0 && a.x == init[i].x && a.dx == init[i].dx {
-				a.xperiod = iters
+			if a.period == 0 && a.x == init[i].x && a.y == init[i].y && a.z == init[i].z && a.dx == init[i].dx && a.dy == init[i].dy && a.dz == init[i].dz && iters > 0 {
+				a.period = iters
+				fmt.Println("FOUND:", i, iters)
+				periodsFound[i] = true
+				if len(periodsFound) == len(moons) {
+					fmt.Println("FOUND ALL:", iters)
+					break iterLoop
+				}
 			}
-			if a.yperiod == 0 && a.y == init[i].y && a.dy == init[i].dy {
-				a.yperiod = iters
-			}
-			if a.zperiod == 0 && a.z == init[i].z && a.dz == init[i].dz {
-				a.zperiod = iters
-			}
-			if a.xperiod > 0 && a.yperiod > 0 && a.zperiod > 0 {
-				numWithPeriods++
-			}
-
+		}
+		if iters%10000000 == 0 {
+			fmt.Println(iters, len(periodsFound))
+		}
+		for i, a := range moons {
 			for j, b := range moons {
 				if i == j {
 					continue
@@ -87,7 +88,7 @@ func main() {
 	}
 	periods := []int64{}
 	for _, a := range moons {
-		periods = append(periods, int64(a.xperiod), int64(a.yperiod), int64(a.zperiod))
+		periods = append(periods, int64(a.period))
 		fmt.Printf("pos=<x=%2d, y=%2d,z=%2d>, vel=<x=%2d,y=%2d,z=%2d>\n", a.x, a.y, a.z, a.dx, a.dy, a.dz)
 	}
 	fmt.Println(periods)
@@ -102,7 +103,9 @@ func lcm(nums ...int64) int64 {
 	if len(nums) > 2 {
 		return lcm(nums[0], lcm(nums[1:]...))
 	}
-	return nums[0] / gcd(nums[0], nums[1]) * nums[1]
+	n := nums[0] / gcd(nums[0], nums[1])
+	fmt.Println("YO", n, nums[1], n*nums[1])
+	return n * nums[1]
 }
 
 func gcd(a, b int64) int64 {
