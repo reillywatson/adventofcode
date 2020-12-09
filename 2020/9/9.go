@@ -13,17 +13,22 @@ func main() {
 		n, _ := strconv.Atoi(line)
 		nums = append(nums, n)
 	}
-	goal := 70639851
+	goal := 0
+	preambleLength := 25
+	for i := preambleLength; i < len(nums); i++ {
+		if !valid(nums[i], nums[i-preambleLength:i]) {
+			goal = nums[i]
+			break
+		}
+	}
 	longest := []int{}
 	for i := 0; i < len(nums); i++ {
 		sum := nums[i]
 		for j := i + 1; j < len(nums); j++ {
 			sum += nums[j]
-			if sum >= goal {
-				if sum == goal {
-					if len(nums[i:j+1]) > len(longest) {
-						longest = nums[i : j+1]
-					}
+			if sum == goal {
+				if len(nums[i:j+1]) > len(longest) {
+					longest = nums[i : j+1]
 				}
 			}
 		}
