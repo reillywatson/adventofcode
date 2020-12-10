@@ -18,11 +18,11 @@ func main() {
 		n, _ := strconv.Atoi(line)
 		nums = append(nums, n)
 	}
+	nums = append(nums, 0)
 	sort.Ints(nums)
 	nums = append(nums, nums[len(nums)-1]+3)
 
 	var nodes []*node
-	nodes = append(nodes, &node{N: 0})
 	for _, num := range nums {
 		n := &node{N: num}
 		for _, parent := range nodes {
