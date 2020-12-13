@@ -20,10 +20,8 @@ func main() {
 	}
 	var a, n []*big.Int
 	for i, t := range times {
-		if t != 1 {
-			a = append(a, big.NewInt(int64(t-i)))
-			n = append(n, big.NewInt(int64(t)))
-		}
+		a = append(a, big.NewInt(int64(t-i)))
+		n = append(n, big.NewInt(int64(t)))
 	}
 	answer, err := crt(a, n)
 	if err != nil {
