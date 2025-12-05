@@ -40,9 +40,7 @@ func main() {
 	}
 	total := 0
 	for _, r := range ranges {
-		if r.start != -1 && r.end != -1 {
-			total += r.end - r.start + 1
-		}
+		total += r.end - r.start + 1
 	}
 	fmt.Println(total)
 }
