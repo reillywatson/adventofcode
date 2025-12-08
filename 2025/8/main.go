@@ -21,7 +21,46 @@ func (c coord) String() string {
 }
 
 func main() {
+	var coords []*coord
+	for i, line := range strings.Split(input, "\n") {
+		var c coord
+		fmt.Sscanf(line, "%d,%d,%d", &c.x, &c.y, &c.z)
+		c.circuit = i
+		coords = append(coords, &c)
+	}
+	for {
+		minDist := math.MaxFloat64
+		minJ := -1
+		minK := -1
+		for j, c1 := range coords {
+			for k, c2 := range coords {
+				if j == k || slices.Contains(c1.conns, c2) {
+					continue
+				}
+				dist := distance(c1, c2)
+				if dist < minDist {
+					minDist = dist
+					minJ = j
+					minK = k
+				}
+			}
+		}
+		if minJ == -1 || minK == -1 {
+			break
+		}
+		mergeCircuits(coords, minJ, minK)
+		circuitSizes := map[int]int{}
+		for _, c := range coords {
+			circuitSizes[c.circuit]++
+		}
+		if len(circuitSizes) == 1 {
+			fmt.Println(coords[minJ].x * coords[minK].x)
+			break
+		}
+	}
+}
 
+func main_partone() {
 	numIterations := 1000
 
 	var coords []*coord
@@ -59,16 +98,17 @@ func main() {
 	}
 	sortedSizes := slices.Sorted(maps.Values(circuitSizes))
 	slices.Reverse(sortedSizes)
-	fmt.Println(sortedSizes)
 	fmt.Println(sortedSizes[0] * sortedSizes[1] * sortedSizes[2])
 }
 
 func mergeCircuits(coords []*coord, j, k int) {
 	c1 := coords[j]
 	c2 := coords[k]
+	oldCircuit := c2.circuit
+	newCircuit := c1.circuit
 	for i := range coords {
-		if coords[i].circuit == c2.circuit {
-			coords[i].circuit = c1.circuit
+		if coords[i].circuit == oldCircuit {
+			coords[i].circuit = newCircuit
 		}
 	}
 	c1.conns = append(c1.conns, c2)
